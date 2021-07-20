@@ -11,7 +11,7 @@ googleAuthenticatorPath="sources/etc/skel/.google_authenticator"
 
 # Optional config
 imageName="arm_node_tools.img" # Customize the output image filename
-DISTRIBUTED_PKGS="/tmp/ubuntu_iso/tmp/arm_node_tools_dist_pkgs"
+DISTRIBUTED_PKGS="/tmp/ubuntu_iso/opt/arm_node_tools_dist_pkgs"
 
 if [ -z "$pubKeyPath" ]; then
     echo "ERROR: \$pubKeyPath in make.sh is not set yet. Needs to point to a ED25519 or RSA public key"

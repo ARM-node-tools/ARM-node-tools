@@ -1,7 +1,7 @@
 # ARM Node Tools
 ARM node tools is a set of blockchain agnostic, general purpose tools that facilitate the use of consensus nodes. This project specifically tests against the Raspberry Pi 4 Model B (8GB) hardware, but is meant to be theoretically usable on other ARM devices.
 
-Really, this project is just a Ubuntu based ARM image that you can customize and compile yourself. It won't install or configure any blockchain specific software for you, but it will help you bootstrap your ARM node so you can use it for whatever you want (Bitcoin, Etherem, Cardano, Avalanche, whatever!). It's up to you to research and understand the requirements from the blockchain you are targeting. But even for energy intensive PoW blockchains like Bitcoin, it's possible to run a node with a low power ARM device as long as you aren't trying to mine with it.
+Really, this project is just a Ubuntu based ARM image that you can customize and compile yourself. It won't install or configure any blockchain specific software for you, but it will help you bootstrap your ARM node so you can use it for whatever you want (Bitcoin, Ethereum, Cardano, Avalanche, whatever!). It's up to you to research and understand the requirements from the blockchain you are targeting. But even for energy intensive PoW blockchains like Bitcoin, it's possible to run a node with a low power ARM device as long as you aren't trying to mine with it.
 
 ## Goals
 1. Promote and facilitate the usage of low power/low cost ARM devices for blockchain nodes.

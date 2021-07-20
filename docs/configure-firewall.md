@@ -1,0 +1,1 @@
+https://www.coincashew.com/coins/overview-eth/guide-or-security-best-practices-for-a-eth2-validator-beaconchain-node#configure-your-firewall

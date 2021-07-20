@@ -1,0 +1,175 @@
+#!/bin/bash
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+# This script turns the Ubuntu 64 bit image into an Ethereum on ARM image
+#
+
+# SSH port generation tool - https://www.random.org/integers/?num=5&min=1024&max=49141&col=5&base=10&format=html&rnd=new
+SSH_PORT=43089 # [Optional] Use a random port # from 1024 thru 49141 - check for conflicts https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
+
+FORMAT_DRIVE=0 # Set to 1 to format the drive with an ext4 partition
+DRIVE_MOUNT_PATH=/media/ethereum # Path used to mount the drive
+
+INSTALL_SECURE_SHARED_MEMORY=1
+
+INSTALL_FAIL_2_BAN=1
+FAIL_2_BAN_IGNORE_IP="192.168.3.0/24 127.0.0.1/8"
+
+INSTALL_DIST_PKGS=1
+INSTALL_ARMBIAN_EXTRAS_DEPS=1
+DISTRIBUTED_PKGS="/tmp/arm_node_tools_dist_pkgs"
+
+FLAG="/root/first-run.flag"
+if [ ! -f $FLAG ]; then
+  # Disable Ubuntu cloud-init https://gist.github.com/zoilomora/f862f76335f5f53644a1b8e55fe98320
+  touch /etc/cloud/cloud-init.disabled
+
+  # Modify hostname (ethereumonarm-$MAC-HASH-CHUNK)
+  echo Changing hostname
+  MAC_HASH=`cat /sys/class/net/eth0/address | sha256sum | awk '{print substr($0,0,9)}'`
+  echo ethereumonarm-$MAC_HASH > /etc/hostname
+  sed -i "s/127.0.0.1.*/127.0.0.1\tethereumonarm-$MAC_HASH/g" /etc/hosts
+  # Create Ethereum account for ssh access
+  echo "Creating ethereum user"
+  if ! id -u ethereum >/dev/null 2>&1; then
+    adduser --disabled-password --gecos "" ethereum
+  fi
+
+  echo "ethereum:ethereum" | chpasswd
+  for GRP in sudo netdev audio video dialout plugdev; do
+    adduser ethereum $GRP
+  done
+
+  # Force password change on first login
+  # https://www.codevoila.com/post/26/fix-authentication-token-manipulation-error-when-changing-user-password-in-ubuntu
+  chage -d 0 ethereum
+
+  # Wait for interface to link up
+  n=0
+  until [ "$n" -ge 3 ]
+  do
+    nc -z google.com 443 > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      break
+    else
+      n=$((n+1))
+      sleep 5
+    fi
+  done
+
+  if [ "$n" -eq 3 ]; then
+    echo "Stopping the installation, access to internet is needed"
+    exit 1
+  fi
+
+  apt-get -y update
+
+  #Install ufw
+  apt-get -y install ufw
+  ufw --force disable
+
+  #Disable root user
+  passwd -l root
+
+  #Delete ubuntu user
+  deluser ubuntu
+
+  # Add the pre-installed public key from image generation to the set of authorized ssh keys
+  [ ! -d "/home/ethereum/.ssh" ] && mkdir /home/ethereum/.ssh
+  cat /home/ethereum/ethereum-server.pub > /home/ethereum/.ssh/authorized_keys
+
+  sed -i 's|ChallengeResponseAuthentication yes|ChallengeResponseAuthentication no|g' /etc/ssh/sshd_config
+  sed -i 's|PasswordAuthentication yes|PasswordAuthentication no|g' /etc/ssh/sshd_config
+  sed -i 's|#PermitRootLogin prohibit-password|PermitRootLogin no|g' /etc/ssh/sshd_config
+  sed -i 's|#PermitEmptyPasswords no|PermitEmptyPasswords  no|g' /etc/ssh/sshd_config
+  sed -i "s|#Port 22|Port $SSH_PORT|g" /etc/ssh/sshd_config | grep Port
+
+  if [[ $FORMAT_DRIVE -eq 1 ]];
+  then
+    echo "Looking for USB drive"
+    stat  /dev/sda > /dev/null 2>&1
+    if [[ $? -eq 0 ]];
+    then
+      echo "USB drive found"
+      echo "Partitioning and formatting USB Drive..."
+      wipefs -a /dev/sda
+      sgdisk -n 0:0:0 /dev/sda
+      mkfs.ext4 -F /dev/sda1
+    else
+      echo "no SDD detected"
+      echo "Stopping the installation, and extenal disk is needed"
+      exit 1
+    fi
+  fi
+
+  mkdir -p $DRIVE_MOUNT_PATH
+  echo "/dev/sda1 $DRIVE_MOUNT_PATH ext4 defaults 0 2" >> /etc/fstab && mount $DRIVE_MOUNT_PATH
+
+  # Secure shared memory
+  if [[ $INSTALL_SECURE_SHARED_MEMORY -eq 1 ]];
+  then
+    echo "Installing secure shared memory"
+    echo "tmpfs    /run/shm    tmpfs    ro,noexec,nosuid    0 0" >> /etc/fstab
+  fi
+
+  # Fail2ban
+  if [[ $INSTALL_FAIL_2_BAN -eq 1 ]];
+  then
+    echo "Installing fail2ban"
+    apt-get install fail2ban -y
+    echo "[sshd]" >> /etc/fail2ban/jail.local
+    echo "enabled = true" >> /etc/fail2ban/jail.local
+    echo "port = $SSH_PORT" >> /etc/fail2ban/jail.local
+    echo "filter = sshd" >> /etc/fail2ban/jail.local
+    echo "logpath = /var/log/auth.log" >> /etc/fail2ban/jail.local
+    echo "maxretry = 3" >> /etc/fail2ban/jail.local
+    echo "# whitelisted IP addresses" >> /etc/fail2ban/jail.local
+    echo "ignoreip = $FAIL_2_BAN_IGNORE_IP" >> /etc/fail2ban/jail.local
+  fi
+
+  # Setup Google MFA if a config file is available
+  if [ -f "/home/ethereum/.google_authenticator" ]; then
+    echo "Installing google authenticator"
+    apt-get -y install libpam-google-authenticator
+
+    # Backup files before modifying
+    cp /etc/pam.d/sshd /etc/pam.d/sshd.bak
+    cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+
+    echo "auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
+    sed -i 's|@include common-auth|#@include common-auth|g' /etc/pam.d/sshd
+
+    sed -i 's|ChallengeResponseAuthentication no|ChallengeResponseAuthentication yes|g' /etc/ssh/sshd_config
+    echo "AuthenticationMethods publickey,password publickey,keyboard-interactive" >> /etc/ssh/sshd_config
+  fi
+
+  if [[ $INSTALL_DIST_PKGS -eq 1 ]];
+  then
+    if [[ $INSTALL_ARMBIAN_EXTRAS_DEPS -eq 1 ]];
+    then
+      # dc is technically required by the deb, even though that doesn't really make sense
+      apt-get -y install dphys-swapfile dc # Manually install the dependencies of ethereumonarm-armbian-extras, since dpkg isn't smart enough to do this automatically
+    fi
+    
+    # Recursively install all deb packages at $DISTRIBUTED_PKGS
+    dpkg --install --recursive $DISTRIBUTED_PKGS
+  fi
+
+  shred -u ~/.bash_history && touch ~/.bash_history
+
+  #the next line creates an empty file so it won't run the next boot
+  touch $FLAG
+  reboot
+else
+  echo "Nothing to do"
+fi
+exit 0

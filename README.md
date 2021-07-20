@@ -44,7 +44,7 @@ We encourage you to read image-builder/make.sh **and** image-builder/sources/etc
 
 1) You should understand what it is doing, and how it works.
 2) Then you can customize it and shape it to your liking. Push your opinionated changes back up to your fork, so you can reproduce this image whenever you want.
-3) Build trust in the project, and encourage you to coontribute back to it with whatever improvements you come up with that you think add value.
+3) Build trust in the project, and encourage you to contribute back to it with whatever improvements you come up with that you think add value.
 4) It's actually not that much code. If you don't understand a line, or what the flags mean, look it up and take advantage of the learning opportunity. Or just ask.
 
 ## What is included in the image

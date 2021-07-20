@@ -65,7 +65,7 @@ Generally, these are the steps you will need to take
 
 ### 3. Setup distributed packages
 
-The image compilation script is configured to copy all of the contents of image-builds/packages/ into the image.
+The image compilation script is configured to copy all of the contents of image-builder/packages/ into the image.
 The image rc.local script later installs all of the packages it finds in that directory on first run. This makes the image-builds/packages/ dir an ideal place to put any packages that you want to get automatically installed in your image on first run.
 
 **Install ethereumonarm-armbian-extras**

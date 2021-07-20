@@ -7,10 +7,3 @@ sudo apt-get update -y && sudo apt-get upgrade -y
 sudo apt-get autoremove
 sudo apt-get autoclean
 ```
-
-*Enable automatic updates so you don't have to manually install them.*
-
-```
-sudo apt-get install -y unattended-upgrades
-sudo dpkg-reconfigure -plow unattended-upgrades
-```

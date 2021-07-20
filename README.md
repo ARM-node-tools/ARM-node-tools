@@ -1,10 +1,12 @@
 # ARM Node Tools
 ARM node tools is a set of blockchain agnostic, general purpose tools that facilitate the use of consensus nodes. This project specifically tests against the Raspberry Pi 4 Model B (8GB) hardware, but is meant to be theoretically usable on other ARM devices.
 
+Really, this project is just a Ubuntu based ARM image that you can customize and compile yourself. It won't install or configure any blockchain specific software for you, but it will help you bootstrap your ARM node so you can use it for whatever you want (Bitcoin, Etherem, Cardano, Avalanche, whatever!). It's up to you to research and understand the requirements from the blockchain you are targeting. But even for energy intensive PoW blockchains like Bitcoin, it's possible to run a node with a low power ARM device as long as you aren't trying to mine with it.
+
 ## Goals
 1. Promote and facilitate the usage of low power/low cost ARM devices for blockchain nodes.
 2. Provide general purpose tools to help you run your own consensus node on whatever blockchain you want using a low power ARM device
-3. Optimize for the intermediate to experienced developer (customization > convenience)
+3. Optimize for the intermediate to experienced developers (customization > convenience)
 
 ## Non goals
 1. Become a convenient one-click installer for staking on any particular blockchain
@@ -22,7 +24,7 @@ ARM node tools is a set of blockchain agnostic, general purpose tools that facil
 This project is a fork of the [Ethereum on ARM project](https://github.com/diglos/ethereumonarm). That is a great project with a well defined mission and a strategy that makes sense. This project has different goals, and therefore takes a different strategy. Primary differences below:
 
 1. This project does not include any ethereum specific software, while the Ethereum on ARM project does.
-2. While this project is unopinionated about blockchain specific software, it *is* opinionated about hardening security by default and includes additional security features.
+2. While this project is unopinionated about blockchain specific software, it *is* opinionated about hardening security by default and includes additional security features that make sense across blockchains.
 
 
 # How it works
@@ -77,7 +79,7 @@ For a more in-depth tutorial on how to use this project, check out our [getting 
 # Acknowledgement and credits
 
 This image was inspired by various sources
+- [Ethereum on ARM project](https://ethereum-on-arm-documentation.readthedocs.io/en/latest/index.html)
 - [Coin Cashew Security tips for eth stakers](https://www.coincashew.com/coins/overview-eth/guide-or-security-best-practices-for-a-eth2-validator-beaconchain-node#disable-root-account)
 - [Guide to staking on Ethereum 2.0 by Somer Esat](https://someresat.medium.com/guide-to-staking-on-ethereum-2-0-ubuntu-pyrmont-lighthouse-a634d3b87393)
-- [Ethereum on ARM project](https://ethereum-on-arm-documentation.readthedocs.io/en/latest/index.html)
 - [Digital Ocean MFA guide](https://www.digitalocean.com/community/tutorials/how-to-set-up-multi-factor-authentication-for-ssh-on-ubuntu-18-04)

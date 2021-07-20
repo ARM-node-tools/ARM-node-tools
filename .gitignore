@@ -4,5 +4,4 @@
 *.img
 *.pub
 .google_authenticator
-TODO.txt
 image-builder/packages/ethereumonarm-armbian-extras_*.deb

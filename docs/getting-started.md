@@ -86,9 +86,9 @@ cp submodules/ethereumonarm/fpm-package-builder/packages/ethereumonarm-armbian-e
 Alternatively, if you would prefer to just install the version of the package that is distributed from the ethereum on arm APT server, you can do that like this
 
 ```bash
-  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8A584409D327B0A5
-  add-apt-repository -n "deb http://apt.ethraspbian.com focal main"
-  sudo apt-get -y install ethereumonarm-armbian-extras 
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8A584409D327B0A5
+add-apt-repository -n "deb http://apt.ethraspbian.com focal main"
+sudo apt-get -y install ethereumonarm-armbian-extras 
 ```
 
 ### Make your own customizations

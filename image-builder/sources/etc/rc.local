@@ -161,7 +161,7 @@ if [ ! -f $FLAG ]; then
   if [[ $INSTALL_DIST_PKGS -eq 1 ]];
   then
     echo "Installing distributed packages that came with this image..."
-    ls $INSTALL_DIST_PKGS
+    ls $DISTRIBUTED_PKGS
 
     if [[ $INSTALL_ARMBIAN_EXTRAS_DEPS -eq 1 ]];
     then

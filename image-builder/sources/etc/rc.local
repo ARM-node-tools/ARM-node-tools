@@ -173,6 +173,18 @@ if [ ! -f $FLAG ]; then
     dpkg --install --recursive $DISTRIBUTED_PKGS
   fi
 
+
+  # https://haydenjames.io/raspberry-pi-performance-add-zram-kernel-parameters/
+  # Page allocation error workout
+  echo "vm.min_free_kbytes=65536" >> /etc/sysctl.conf
+  # Increasing how aggressively the kernel will swap memory pages since we are using ZRAM first
+  echo "vm.swappiness=100" >> /etc/sysctl.conf
+  # Increases cache pressure, which increases the tendency of the kernel to reclaim memory used for caching of directory and inode objects. You will use less memory over a longer period of time
+  echo "vm.vfs_cache_pressure=500" >> /etc/sysctl.conf
+  # Background processes will start writing right away when it hits the 1% limit but the system won’t force synchronous I/O until it gets to 50% dirty_ratio
+  echo "vm.dirty_background_ratio=1" >> /etc/sysctl.conf
+  echo "vm.dirty_ratio=50" >> /etc/sysctl.conf
+
   shred -u ~/.bash_history && touch ~/.bash_history
 
   #the next line creates an empty file so it won't run the next boot

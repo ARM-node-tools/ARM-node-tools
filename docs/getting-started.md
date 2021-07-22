@@ -80,7 +80,7 @@ git submodule update --init --recursive # "Inflate" git submodules, run from rep
 cd submodules/ethereumonarm/fpm-package-builder/ethereumonarm-armbian-extras
 make deb # Make sure you run this from vagrant VM, which has build dependencies installed
 cd ../../../../ # This takes us back to the repository root
-cp submodules/ethereumonarm/fpm-package-builder/packages/ethereumonarm-armbian-extras_1.2.0-0_all.deb image-builder/packages
+cp submodules/ethereumonarm/fpm-package-builder/packages/ethereumonarm-armbian-extras_2.0.0-0_all.deb image-builder/packages
 ```
 
 Alternatively, if you would prefer to just install the version of the package that is distributed from the ethereum on arm APT server, you can do that like this

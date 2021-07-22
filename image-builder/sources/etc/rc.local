@@ -185,6 +185,11 @@ if [ ! -f $FLAG ]; then
   echo "vm.dirty_background_ratio=1" >> /etc/sysctl.conf
   echo "vm.dirty_ratio=50" >> /etc/sysctl.conf
 
+  sed -i "s|#CONF_SWAPFILE=/var/swap|CONF_SWAPFILE=$DRIVE_MOUNT_PATH/swapfile|g" /etc/dphys-swapfile
+  sed -i 's/#CONF_SWAPSIZE=/CONF_SWAPSIZE=8192/' /etc/dphys-swapfile
+  sed -i 's/#CONF_MAXSWAP=2048/CONF_MAXSWAP=8192/' /etc/dphys-swapfile
+  systemctl enable dphys-swapfile
+
   shred -u ~/.bash_history && touch ~/.bash_history
 
   #the next line creates an empty file so it won't run the next boot

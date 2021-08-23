@@ -108,6 +108,8 @@ if [ ! -f $FLAG ]; then
       wipefs -a /dev/sda
       sgdisk -n 0:0:0 /dev/sda
       mkfs.ext4 -F /dev/sda1
+
+      tune2fs -m 0 /dev/sda1
     else
       echo "no SDD detected"
       echo "Stopping the installation, and extenal disk is needed"

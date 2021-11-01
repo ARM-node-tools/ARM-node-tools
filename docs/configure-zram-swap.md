@@ -1,0 +1,1 @@
+https://haydenjames.io/raspberry-pi-performance-add-zram-kernel-parameters/

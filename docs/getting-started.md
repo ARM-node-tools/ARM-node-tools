@@ -68,29 +68,6 @@ Generally, these are the steps you will need to take
 The image compilation script is configured to copy all of the contents of image-builder/packages/ into the image.
 The image rc.local script later installs all of the packages it finds in that directory on first run. This makes the image-builds/packages/ dir an ideal place to put any packages that you want to get automatically installed in your image on first run.
 
-**Install ethereumonarm-armbian-extras**
-
-One package that is **strongly recommended** to configure here is ethereumonarm-armbian-extras from the ethereum on arm project.
-The name of that package implies that it is specific to Ethereum, but it's not. All it does is re-package the ZRAM + swap scripts from the armbian project and tune it for the needs of the RPi 4 Model B. By installing that package, you automatically get a swap config, and ZRAM config with sensible defaults.
-
-For convenience, the ethereum on arm project is included as a submodule of this repo at submodules/ethereumonarm. You can also install this package directly from their APT server, but because this project values trustlessness, here are the instructions for compiling it from source.
-
-```bash
-git submodule update --init --recursive # "Inflate" git submodules, run from repo root
-cd submodules/ethereumonarm/fpm-package-builder/ethereumonarm-armbian-extras
-make deb # Make sure you run this from vagrant VM, which has build dependencies installed
-cd ../../../../ # This takes us back to the repository root
-cp submodules/ethereumonarm/fpm-package-builder/packages/ethereumonarm-armbian-extras_2.0.0-0_all.deb image-builder/packages
-```
-
-Alternatively, if you would prefer to just install the version of the package that is distributed from the ethereum on arm APT server, you can do that like this
-
-```bash
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8A584409D327B0A5
-add-apt-repository -n "deb http://apt.ethraspbian.com focal main"
-sudo apt-get -y install ethereumonarm-armbian-extras 
-```
-
 ### Make your own customizations
 
 You are encouraged to make whatever other changes you want.
@@ -105,7 +82,6 @@ Some ideas:
 - Set a static ip
 - Configure a firewall
 - Rename the default linux user
-- Change the swap + ZRAM config to fit your needs
 
 ## Compile the image
 
@@ -120,3 +96,12 @@ When you are ready prepare the image, run the following command from the ```imag
 1. Download and install the [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
 2. Launch it, select your compiled image, and your MicroSD card, and hit continue. This will take a few minutes to write to disk and verify.
 3. Eject and insert into your device, and boot it up!
+
+## Go through post-install setup
+
+Some ideas to consider
+- [Update your OS](update_os.md)
+- [Configure ZRAM swap](configure-zram-swap.md)
+- [Configure ZRAM log rotation on /var/log](configure-zramlog.md)
+- [Configure a UFW firewall](configure-firewall.md)
+- [Test the performance of your SSD](test-ssd.md)

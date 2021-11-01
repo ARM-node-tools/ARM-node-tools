@@ -1,11 +1,11 @@
 # ARM Node Tools
 ARM node tools is a set of blockchain agnostic, general purpose tools that facilitate the use of consensus nodes. This project specifically tests against the Raspberry Pi 4 Model B (8GB) hardware, but is meant to be theoretically usable on other ARM devices.
 
-Really, this project is just a Ubuntu based ARM image that you can customize and compile yourself. It won't install or configure any blockchain specific software for you, but it will help you bootstrap your ARM node so you can use it for whatever you want (Bitcoin, Ethereum, Cardano, Avalanche, whatever!). It's up to you to research and understand the requirements from the blockchain you are targeting. But even for energy intensive PoW blockchains like Bitcoin, it's possible to run a node with a low power ARM device as long as you aren't trying to mine with it.
+Really, this project is just a Ubuntu based ARM image that you can customize and compile yourself. It won't install or configure any blockchain specific software for you, but it will help you bootstrap your ARM node so you can use it for whatever you want (Bitcoin, Ethereum, Cardano, Avalanche, whatever!). It's up to you to research and understand the requirements from the blockchain you are targeting. But even for energy intensive PoW blockchains like Bitcoin, it's possible to run a consensus node with a low power ARM device as long as you aren't trying to mine with it.
 
 ## Goals
 1. Promote and facilitate the usage of low power/low cost ARM devices for blockchain nodes.
-2. Provide general purpose tools to help you run your own consensus node on whatever blockchain you want using a low power ARM device
+2. Provide general purpose tools to help individuals run their own consensus node on whatever blockchain they want using a low power ARM device
 3. Optimize for the intermediate to experienced developers (customization > convenience)
 
 ## Non goals
@@ -24,12 +24,11 @@ Really, this project is just a Ubuntu based ARM image that you can customize and
 This project is a fork of the [Ethereum on ARM project](https://github.com/diglos/ethereumonarm). That is a great project with a well defined mission and a strategy that makes sense. This project has different goals, and therefore takes a different strategy. Primary differences below:
 
 1. This project does not include any ethereum specific software, while the Ethereum on ARM project does.
-2. While this project is unopinionated about blockchain specific software, it *is* opinionated about hardening security by default and includes additional security features that make sense across blockchains.
-
+2. While this project is *not* opinionated about blockchain specific software, it *is* opinionated about hardening security by default and includes additional security features that make sense across blockchains.
 
 # How it works
 
-## At a glance
+## Expected flow
 
 1. Fork the repo (if you want)
 2. Clone the repo
@@ -37,14 +36,13 @@ This project is a fork of the [Ethereum on ARM project](https://github.com/diglo
 4. Compile the image
 5. Flash your MicroSD card, power on your device, and go on your merry way installing whatever blockchain specific applications you want. You are on your own at this point.
 
-
 ## Read the source
 
 We encourage you to read image-builder/make.sh **and** image-builder/sources/etc/rc.local line by line for several reasons:
 
 1) You should understand what it is doing, and how it works.
 2) Then you can customize it and shape it to your liking. Push your opinionated changes back up to your fork, so you can reproduce this image whenever you want.
-3) Build trust in the project, and encourage you to contribute back to it with whatever improvements you come up with that you think add value.
+3) Build trust in the project, and encourage you to contribute back to it with whatever improvements you come up with that you think add value to everyone.
 4) It's actually not that much code. If you don't understand a line, or what the flags mean, look it up and take advantage of the learning opportunity. Or just ask.
 
 ## What is included in the image

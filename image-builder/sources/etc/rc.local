@@ -13,11 +13,13 @@
 # This script turns the Ubuntu 64 bit image into an Ethereum on ARM image
 #
 
+HOST_NAME_PREFIX="ethereumonarm"
+
 # SSH port generation tool - https://www.random.org/integers/?num=5&min=1024&max=49141&col=5&base=10&format=html&rnd=new
 SSH_PORT=22 # [Optional] Set a random port # from 1024 thru 49141 - check for conflicts https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
 
-FORMAT_DRIVE=0 # Set to 1 to format the drive with an ext4 partition
-DRIVE_MOUNT_PATH=/media/ethereum # Path used to mount the drive
+FORMAT_DRIVE=1 # Set to 1 to format the drive with an ext4 partition
+DRIVE_MOUNT_PATH=/mnt/ethereum # Path used to mount the drive
 
 # https://www.coincashew.com/coins/overview-eth/guide-or-security-best-practices-for-a-eth2-validator-beaconchain-node#secure-shared-memory
 INSTALL_SECURE_SHARED_MEMORY=1
@@ -28,8 +30,7 @@ INSTALL_FAIL_2_BAN=1
 FAIL_2_BAN_IGNORE_IP="127.0.0.1/8" # [Recommended] Add your LAN network in CIDR notation (seperated by whitespace)
 
 # Install all deb packages pre-distributed with this image
-INSTALL_DIST_PKGS=1
-INSTALL_ARMBIAN_EXTRAS_DEPS=1 # Leave this on if you included ethereum-armbian-extras with this image (recommended), to manually install its dependencies
+INSTALL_DIST_PKGS=0
 DISTRIBUTED_PKGS="/opt/arm_node_tools_dist_pkgs"
 
 FLAG="/root/first-run.flag"
@@ -40,7 +41,7 @@ if [ ! -f $FLAG ]; then
   # Modify hostname (ethereumonarm-$MAC-HASH-CHUNK)
   echo Changing hostname
   MAC_HASH=`cat /sys/class/net/eth0/address | sha256sum | awk '{print substr($0,0,9)}'`
-  echo ethereumonarm-$MAC_HASH > /etc/hostname
+  echo $HOST_NAME_PREFIX-$MAC_HASH > /etc/hostname
   sed -i "s/127.0.0.1.*/127.0.0.1\tethereumonarm-$MAC_HASH/g" /etc/hosts
   # Create Ethereum account for ssh access
   echo "Creating ethereum user"
@@ -165,32 +166,9 @@ if [ ! -f $FLAG ]; then
     echo "Installing distributed packages that came with this image..."
     ls $DISTRIBUTED_PKGS
 
-    if [[ $INSTALL_ARMBIAN_EXTRAS_DEPS -eq 1 ]];
-    then
-      # dc is technically required by the deb, even though that doesn't really make sense
-      apt-get -y install dphys-swapfile dc # Manually install the dependencies of ethereumonarm-armbian-extras, since dpkg isn't smart enough to do this automatically
-    fi
-    
     # Recursively install all deb packages at $DISTRIBUTED_PKGS
     dpkg --install --recursive $DISTRIBUTED_PKGS
   fi
-
-
-  # https://haydenjames.io/raspberry-pi-performance-add-zram-kernel-parameters/
-  # Page allocation error workout
-  echo "vm.min_free_kbytes=65536" >> /etc/sysctl.conf
-  # Increasing how aggressively the kernel will swap memory pages since we are using ZRAM first
-  echo "vm.swappiness=100" >> /etc/sysctl.conf
-  # Increases cache pressure, which increases the tendency of the kernel to reclaim memory used for caching of directory and inode objects. You will use less memory over a longer period of time
-  echo "vm.vfs_cache_pressure=500" >> /etc/sysctl.conf
-  # Background processes will start writing right away when it hits the 1% limit but the system won’t force synchronous I/O until it gets to 50% dirty_ratio
-  echo "vm.dirty_background_ratio=1" >> /etc/sysctl.conf
-  echo "vm.dirty_ratio=50" >> /etc/sysctl.conf
-
-  sed -i "s|#CONF_SWAPFILE=/var/swap|CONF_SWAPFILE=$DRIVE_MOUNT_PATH/swapfile|g" /etc/dphys-swapfile
-  sed -i 's/#CONF_SWAPSIZE=/CONF_SWAPSIZE=8192/' /etc/dphys-swapfile
-  sed -i 's/#CONF_MAXSWAP=2048/CONF_MAXSWAP=8192/' /etc/dphys-swapfile
-  systemctl enable dphys-swapfile
 
   shred -u ~/.bash_history && touch ~/.bash_history
 

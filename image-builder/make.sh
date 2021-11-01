@@ -10,7 +10,7 @@ pubKeyPath="sources/etc/skel/ethereum-server.pub"
 googleAuthenticatorPath="sources/etc/skel/.google_authenticator"
 
 # Optional config
-imageName="arm_node_tools.img" # Customize the output image filename
+imageName="arm_node_tools_solo_no_armbian_extras.img" # Customize the output image filename
 DISTRIBUTED_PKGS="/tmp/ubuntu_iso/opt/arm_node_tools_dist_pkgs"
 
 if [ -z "$pubKeyPath" ]; then
